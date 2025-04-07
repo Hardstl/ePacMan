@@ -1,0 +1,215 @@
+{
+  "name": "epacman",
+  "displayName": "ePacMan",
+  "description": "Extension to manage Enterprise Policy As Code (epac)",
+  "version": "0.1.5",
+  "engines": {
+    "vscode": "^1.98.0"
+  },
+  "categories": [
+    "Azure",
+    "Formatters",
+    "Linters"
+  ],
+  "activationEvents": [
+    "onLanguage:json",
+    "onLanguage:jsonc"
+  ],
+  "main": "./dist/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "epacman.validateCurrentFile",
+        "title": "ePacMan: Validate Current File"
+      },
+      {
+        "command": "epacman.generatePolicyAssignment",
+        "title": "ePacMan: Generate Policy Assignment"
+      },
+      {
+        "command": "epacman.viewPolicyCard",
+        "title": "ePacMan: View Policy Card"
+      },
+      {
+        "command": "epacman.generatePolicyAssignmentFromAzure",
+        "title": "ePacMan: Generate Policy Assignment from Azure Policy"
+      },
+      {
+        "command": "epacman.compareWithGitHub",
+        "title": "ePacMan: Compare with ALZ GitHub Version"
+      },
+      {
+        "command": "epacman.updateToGitHubVersion",
+        "title": "ePacMan: Update to ALZ GitHub Version"
+      }
+    ],
+    "jsonValidation": [],
+    "languages": [
+      {
+        "id": "jsonc",
+        "extensions": [
+          ".jsonc"
+        ],
+        "aliases": [
+          "JSON with Comments"
+        ],
+        "configuration": "./language-configuration.json",
+        "icon": {
+          "light": "./media/images/json-light.png",
+          "dark": "./media/images/json-dark.png"
+        }
+      }
+    ],
+    "menus": {
+      "editor/context": [
+        {
+          "when": "resourceExtname =~ /\\.(json|jsonc)$/i",
+          "command": "epacman.validateCurrentFile",
+          "group": "epacman"
+        },
+        {
+          "when": "resourceExtname =~ /\\.(json|jsonc)$/i && epacman.isCustomPolicy",
+          "command": "epacman.generatePolicyAssignment",
+          "group": "epacman"
+        },
+        {
+          "when": "resourceExtname =~ /\\.(json|jsonc)$/i",
+          "command": "epacman.viewPolicyCard",
+          "group": "epacman"
+        },
+        {
+          "when": "resourceExtname =~ /\\.(json|jsonc)$/i && epacman.isCustomPolicy",
+          "command": "epacman.compareWithGitHub",
+          "group": "epacman"
+        },
+        {
+          "when": "resourceExtname =~ /\\.(json|jsonc)$/i && epacman.isCustomPolicy",
+          "command": "epacman.updateToGitHubVersion",
+          "group": "epacman"
+        }
+      ],
+      "explorer/context": [
+        {
+          "when": "resourceExtname =~ /\\.(json|jsonc)$/i",
+          "command": "epacman.validateCurrentFile",
+          "group": "epacman"
+        },
+        {
+          "when": "resourceExtname =~ /\\.(json|jsonc)$/i && epacman.isCustomPolicy",
+          "command": "epacman.generatePolicyAssignment",
+          "group": "epacman"
+        },
+        {
+          "when": "resourceExtname =~ /\\.(json|jsonc)$/i",
+          "command": "epacman.viewPolicyCard",
+          "group": "epacman"
+        },
+        {
+          "when": "resourceExtname =~ /\\.(json|jsonc)$/i && epacman.isCustomPolicy",
+          "command": "epacman.compareWithGitHub",
+          "group": "epacman"
+        },
+        {
+          "when": "resourceExtname =~ /\\.(json|jsonc)$/i && epacman.isCustomPolicy",
+          "command": "epacman.updateToGitHubVersion",
+          "group": "epacman"
+        }
+      ]
+    },
+    "configuration": {
+      "title": "ePacMan",
+      "properties": {
+        "epacman.logging.level": {
+          "type": "string",
+          "enum": [
+            "debug",
+            "info",
+            "warn",
+            "error"
+          ],
+          "default": "info",
+          "description": "Controls the verbosity of logs in the output channel"
+        },
+        "epacman.logging.saveToFile": {
+          "type": "boolean",
+          "default": false,
+          "description": "Whether to save logs to a file"
+        },
+        "epacman.errorHandling.autoRetry": {
+          "type": "boolean",
+          "default": true,
+          "description": "Automatically retry operations that fail due to transient errors"
+        },
+        "epacman.errorHandling.showDetailedErrors": {
+          "type": "boolean",
+          "default": false,
+          "description": "Show detailed technical error information in error messages"
+        },
+        "epacman.validation.ignoreErrors": {
+          "type": "array",
+          "default": [],
+          "description": "List of validation error patterns to ignore (e.g. 'must be equal to constant')",
+          "items": {
+            "type": "string"
+          }
+        },
+        "epacman.validation.ignoreEffectConstantError": {
+          "type": "boolean",
+          "default": false,
+          "description": "Ignore all 'must be equal to constant' validation errors in policy definitions, including effect properties and parameter metadata displayNames",
+          "order": 1
+        }
+      }
+    }
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run package",
+    "compile": "webpack",
+    "watch": "webpack --watch",
+    "package": "webpack --mode production --devtool hidden-source-map",
+    "compile-tests": "tsc -p . --outDir out",
+    "watch-tests": "tsc -p . -w --outDir out",
+    "pretest": "npm run compile-tests && npm run compile && npm run lint",
+    "lint": "eslint src",
+    "test": "node ./out/test/runTest.js",
+    "test:unit": "mocha --require ts-node/register src/test/suite/**/*.test.ts",
+    "test:coverage": "nyc --reporter=lcov --reporter=text mocha --require ts-node/register src/test/suite/**/*.test.ts"
+  },
+  "dependencies": {
+    "@vscode/vsce": "^3.3.2",
+    "ajv": "^8.12.0",
+    "ajv-formats": "^2.1.1",
+    "axios": "^1.6.7",
+    "fs-extra": "^11.2.0",
+    "jsonc-parser": "^3.3.1"
+  },
+  "devDependencies": {
+    "@istanbuljs/nyc-config-typescript": "^1.0.2",
+    "@types/fs-extra": "^11.0.4",
+    "@types/mocha": "^10.0.10",
+    "@types/node": "20.x",
+    "@types/sinon": "^17.0.3",
+    "@types/vscode": "^1.98.0",
+    "@typescript-eslint/eslint-plugin": "^8.25.0",
+    "@typescript-eslint/parser": "^8.25.0",
+    "@vscode/test-cli": "^0.0.10",
+    "@vscode/test-electron": "^2.4.1",
+    "eslint": "^9.21.0",
+    "glob": "^10.3.10",
+    "nyc": "^15.1.0",
+    "proxyquire": "^2.1.3",
+    "sinon": "^17.0.1",
+    "source-map-support": "^0.5.21",
+    "ts-loader": "^9.5.2",
+    "ts-node": "^10.9.2",
+    "typescript": "^5.7.3",
+    "webpack": "^5.98.0",
+    "webpack-cli": "^6.0.1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hardstl/ePacManV2.git"
+  },
+  "icon": "media/images/icon.png",
+  "publisher": "hardstahl"
+}

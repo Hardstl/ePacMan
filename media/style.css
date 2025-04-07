@@ -1,0 +1,65 @@
+/* Policy Card View Styles */
+:root {
+    --background-color: var(--vscode-editor-background);
+    --foreground-color: var(--vscode-foreground);
+    --border-color: var(--vscode-panel-border);
+    --link-color: var(--vscode-textLink-foreground);
+    --link-hover-color: var(--vscode-textLink-activeForeground);
+    --button-background: var(--vscode-button-background);
+    --button-foreground: var(--vscode-button-foreground);
+    --button-hover-background: var(--vscode-button-hoverBackground);
+}
+
+body {
+    font-family: var(--vscode-font-family);
+    color: var(--foreground-color);
+    background-color: var(--background-color);
+    padding: 0;
+    margin: 0;
+}
+
+.card-container {
+    padding: 20px;
+}
+
+.loading {
+    padding: 20px;
+    font-style: italic;
+    color: var(--vscode-descriptionForeground);
+}
+
+.error-message {
+    color: var(--vscode-errorForeground);
+    background-color: var(--vscode-inputValidation-errorBackground);
+    padding: 10px;
+    border-radius: 4px;
+    margin-top: 10px;
+    border: 1px solid var(--vscode-inputValidation-errorBorder);
+}
+
+/* Button styles */
+button {
+    background-color: var(--button-background);
+    color: var(--button-foreground);
+    border: none;
+    padding: 6px 12px;
+    border-radius: 2px;
+    cursor: pointer;
+    font-size: 13px;
+    margin-right: 8px;
+}
+
+button:hover {
+    background-color: var(--button-hover-background);
+}
+
+/* Link styles */
+a {
+    color: var(--link-color);
+    text-decoration: none;
+}
+
+a:hover {
+    color: var(--link-hover-color);
+    text-decoration: underline;
+}

@@ -1,0 +1,38 @@
+# Dependencies
+node_modules/
+
+# Build outputs
+out/
+dist/
+markdown/
+
+# VS Code
+.vscode/
+.vscode-test/
+
+# GitHub
+.github/
+
+# Environment variables
+.env
+.env.local
+.env.*.local
+
+# Logs
+logs/
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Coverage
+coverage/
+
+# Editor directories
+.idea/
+*.swp
+*.swo

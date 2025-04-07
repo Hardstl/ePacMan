@@ -1,0 +1,184 @@
+{
+    "$schema": "https://json-schema.org/draft/2020-12/schema",
+    "type": "object",
+    "properties": {
+        "name": {
+            "type": "string"
+        },
+        "type": {
+            "const": "Microsoft.Authorization/policyDefinitions"
+        },
+        "properties": {
+            "type": "object",
+            "properties": {
+                "displayName": {
+                    "type": "string"
+                },
+                "description": {
+                    "type": "string"
+                },
+                "mode": {
+                    "type": "string"
+                },
+                "metadata": {
+                    "type": "object",
+                    "properties": {
+                        "version": {
+                            "type": "string"
+                        },
+                        "category": {
+                            "type": "string"
+                        }
+                    },
+                    "required": [
+                        "version",
+                        "category"
+                    ]
+                },
+                "parameters": {
+                    "type": "object",
+                    "properties": {
+                        "effect": {
+                            "type": "object",
+                            "properties": {
+                                "allowedValues": {
+                                    "type": "array",
+                                    "minItems": 2,
+                                    "uniqueItems": true,
+                                    "items": {
+                                        "type": "string",
+                                        "enum": [
+                                            "Disabled",
+                                            "Audit",
+                                            "Deny",
+                                            "Modify",
+                                            "Append",
+                                            "AuditIfNotExists",
+                                            "DeployIfNotExists",
+                                            "DenyAction",
+                                            "Manual"
+                                        ]
+                                    }
+                                },
+                                "defaultValue": {
+                                    "enum": [
+                                        "Disabled",
+                                        "Audit",
+                                        "Deny",
+                                        "Modify",
+                                        "Append",
+                                        "AuditIfNotExists",
+                                        "DeployIfNotExists",
+                                        "DenyAction",
+                                        "Manual"
+                                    ]
+                                },
+                                "metadata": {
+                                    "type": "object",
+                                    "properties": {
+                                        "displayName": {
+                                            "const": "Effect"
+                                        },
+                                        "description": {
+                                            "type": "string"
+                                        }
+                                    },
+                                    "required": [
+                                        "displayName"
+                                    ]
+                                },
+                                "type": {
+                                    "enum": ["string", "String"]
+                                }
+                            },
+                            "required": [
+                                "allowedValues",
+                                "defaultValue",
+                                "metadata",
+                                "type"
+                            ]
+                        }
+                    }
+                },
+                "policyRule": {
+                    "type": "object",
+                    "properties": {
+                        "if": {
+                            "type": "object"
+                        },
+                        "then": {
+                            "type": "object",
+                            "properties": {
+                                "effect": {
+                                    "const": "[parameters('effect')]"
+                                },
+                                "details": {
+                                    "oneOf": [
+                                        {
+                                            "type": "array",
+                                            "items": {
+                                                "type": "object",
+                                                "properties": {
+                                                    "field": {
+                                                        "type": "string"
+                                                    },
+                                                    "value": {
+                                                        "oneOf": [
+                                                            { "type": "string" },
+                                                            { "type": "number" },
+                                                            {
+                                                                "type": "boolean",
+                                                                "description": "Boolean values must be lowercase 'true' or 'false', not 'True' or 'False'"
+                                                            },
+                                                            { "type": "object" },
+                                                            { "type": "array" },
+                                                            { "type": "null" }
+                                                        ],
+                                                        "errorMessage": {
+                                                            "type": "Boolean values must be lowercase 'true' or 'false', not 'True' or 'False'"
+                                                        }
+                                                    }
+                                                },
+                                                "required": ["field", "value"]
+                                            }
+                                        },
+                                        {
+                                            "type": "object",
+                                            "properties": {
+                                                "type": { "type": "string" },
+                                                "existenceCondition": { "type": "object" },
+                                                "roleDefinitionIds": { 
+                                                    "type": "array",
+                                                    "items": { "type": "string" }
+                                                },
+                                                "deployment": { "type": "object" }
+                                            }
+                                        }
+                                    ]
+                                }
+                            },
+                            "required": [
+                                "effect"
+                            ]
+                        }
+                    },
+                    "required": [
+                        "if",
+                        "then"
+                    ]
+                }
+            },
+            "required": [
+                "displayName",
+                "mode",
+                "metadata",
+                "parameters",
+                "policyRule"
+            ]
+        }
+    },
+    "required": [
+        "name",
+        "properties"
+    ]
+}
