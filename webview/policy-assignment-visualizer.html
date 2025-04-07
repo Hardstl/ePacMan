@@ -1,0 +1,43 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Policy Assignment Visualizer</title>
+    <style>
+        {{styles}}
+    </style>
+</head>
+<body>
+    <div class="visualizer-container">
+        <header class="visualizer-header">
+            <h1>Policy Assignment Visualizer</h1>
+            <div class="stats">
+                <span>{{assignmentCount}} assignments</span>
+                <span>{{scopeCount}} scopes</span>
+            </div>
+        </header>
+        
+        <div class="controls">
+            <input type="text" id="search-input" placeholder="Search assignments...">
+            <select id="sort-select">
+                <option value="scope">Sort by Scope</option>
+                <option value="name">Sort by Name</option>
+                <option value="effect">Sort by Effect</option>
+            </select>
+        </div>
+        
+        <div class="assignments-view">
+            {{assignments}}
+        </div>
+        
+        <div id="error-container" class="error-container" style="display: none;">
+            <div class="error-message"></div>
+        </div>
+    </div>
+    
+    <script>
+        {{scripts}}
+    </script>
+</body>
+</html>

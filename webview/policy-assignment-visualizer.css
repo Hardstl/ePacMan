@@ -1,0 +1,270 @@
+:root {
+    --background-color: var(--vscode-editor-background);
+    --foreground-color: var(--vscode-editor-foreground);
+    --header-color: var(--vscode-editor-selectionBackground);
+    --border-color: var(--vscode-panel-border);
+    --card-background: var(--vscode-editorWidget-background);
+    --card-hover-background: var(--vscode-list-hoverBackground);
+    --button-background: var(--vscode-button-background);
+    --button-foreground: var(--vscode-button-foreground);
+    --button-hover-background: var(--vscode-button-hoverBackground);
+    --input-background: var(--vscode-input-background);
+    --input-foreground: var(--vscode-input-foreground);
+    --input-border: var(--vscode-input-border);
+    --effect-deny-color: #ff6b6b;
+    --effect-audit-color: #feca57;
+    --effect-deploy-color: #54a0ff;
+    --effect-modify-color: #5f27cd;
+    --effect-disabled-color: #c8d6e5;
+    --effect-default-color: #576574;
+}
+
+body {
+    font-family: var(--vscode-font-family);
+    background-color: var(--background-color);
+    color: var(--foreground-color);
+    padding: 0;
+    margin: 0;
+}
+
+.visualizer-container {
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding: 16px;
+    box-sizing: border-box;
+}
+
+.visualizer-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 16px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.visualizer-header h1 {
+    margin: 0;
+    font-size: 24px;
+}
+
+.stats {
+    display: flex;
+    gap: 16px;
+}
+
+.controls {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+}
+
+#search-input {
+    flex: 1;
+    padding: 8px;
+    background-color: var(--input-background);
+    color: var(--input-foreground);
+    border: 1px solid var(--input-border);
+    border-radius: 4px;
+}
+
+#sort-select {
+    padding: 8px;
+    background-color: var(--input-background);
+    color: var(--input-foreground);
+    border: 1px solid var(--input-border);
+    border-radius: 4px;
+}
+
+.assignments-view {
+    flex: 1;
+    overflow-y: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+}
+
+.scope-group {
+    margin-bottom: 16px;
+}
+
+.scope-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 8px;
+    padding: 8px;
+    background-color: var(--header-color);
+    border-radius: 4px;
+}
+
+.scope-header h2 {
+    margin: 0;
+    font-size: 18px;
+}
+
+.assignments-container {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+    gap: 16px;
+}
+
+.assignment-card {
+    background-color: var(--card-background);
+    border-radius: 4px;
+    overflow: hidden;
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    transition: transform 0.2s;
+}
+
+.assignment-card:hover {
+    transform: translateY(-2px);
+    background-color: var(--card-hover-background);
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 12px;
+    border-bottom: 1px solid var(--border-color);
+}
+
+.card-title {
+    font-weight: bold;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.card-enforcement {
+    font-size: 12px;
+    padding: 2px 6px;
+    border-radius: 4px;
+    background-color: var(--effect-default-color);
+    color: white;
+}
+
+.card-body {
+    padding: 12px;
+}
+
+.card-description {
+    margin-bottom: 8px;
+    font-size: 14px;
+    line-height: 1.4;
+    max-height: 60px;
+    overflow: hidden;
+}
+
+.card-policy-id {
+    font-size: 12px;
+    color: var(--foreground-color);
+    opacity: 0.7;
+    word-break: break-all;
+}
+
+.card-footer {
+    display: flex;
+    justify-content: space-between;
+    padding: 8px 12px;
+    border-top: 1px solid var(--border-color);
+}
+
+.card-action {
+    padding: 4px 8px;
+    background-color: var(--button-background);
+    color: var(--button-foreground);
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.card-action:hover {
+    background-color: var(--button-hover-background);
+}
+
+.effect-deny {
+    border-top: 4px solid var(--effect-deny-color);
+}
+
+.effect-audit {
+    border-top: 4px solid var(--effect-audit-color);
+}
+
+.effect-deploy {
+    border-top: 4px solid var(--effect-deploy-color);
+}
+
+.effect-modify {
+    border-top: 4px solid var(--effect-modify-color);
+}
+
+.effect-disabled {
+    border-top: 4px solid var(--effect-disabled-color);
+}
+
+.effect-default {
+    border-top: 4px solid var(--effect-default-color);
+}
+
+.error-container {
+    padding: 16px;
+    margin-top: 16px;
+    background-color: var(--effect-deny-color);
+    color: white;
+    border-radius: 4px;
+}
+
+.expanded-details {
+    padding: 12px;
+    background-color: var(--background-color);
+    border-top: 1px solid var(--border-color);
+    max-height: 400px;
+    overflow-y: auto;
+}
+
+.expanded-details h3 {
+    margin-top: 0;
+    margin-bottom: 8px;
+}
+
+.parameter-list {
+    font-family: monospace;
+    font-size: 12px;
+    white-space: pre-wrap;
+    max-height: 300px;
+    overflow-y: auto;
+}
+
+.parameter-item {
+    margin-bottom: 8px;
+    border-bottom: 1px dotted var(--border-color);
+    padding-bottom: 4px;
+}
+
+.parameter-name {
+    font-weight: bold;
+    color: var(--vscode-editor-foreground);
+}
+
+.parameter-value {
+    margin-left: 4px;
+    color: var(--vscode-textLink-foreground);
+}
+
+.array-value {
+    white-space: pre;
+}
+
+.null-value {
+    color: #999;
+    font-style: italic;
+}
+
+@media (max-width: 768px) {
+    .assignments-container {
+        grid-template-columns: 1fr;
+    }
+}

@@ -1,0 +1,21 @@
+{
+	"compilerOptions": {
+		"module": "CommonJS",
+		"moduleResolution": "node",
+		"target": "ES2022",
+		"lib": [
+			"ES2022"
+		],
+		"sourceMap": true,
+		"rootDir": "src",
+		"strict": true,
+		"resolveJsonModule": true,
+		"esModuleInterop": true,
+		"skipLibCheck": true
+	},
+	"exclude": [
+		"Example_policyCardViewProvider.ts",
+		"policyCardViewProvider.ts",
+		"**/node_modules/**"
+	]
+}
