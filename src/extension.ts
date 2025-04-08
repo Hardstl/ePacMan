@@ -108,7 +108,7 @@ function registerSnippetCompletionProvider(context: vscode.ExtensionContext): vo
         const completionProvider = vscode.languages.registerCompletionItemProvider(
             [{ language: 'json' }, { language: 'jsonc' }],
             {
-                provideCompletionItems(document, position, token, completionContext) {
+                async provideCompletionItems(document, position, token, completionContext) {
                     // Get document URI for caching
                     const documentUri = document.uri.toString();
                     
@@ -127,15 +127,23 @@ function registerSnippetCompletionProvider(context: vscode.ExtensionContext): vo
                             return null;
                         }
                         
-                        // Start async full check to properly update the cache for future requests
-                        identifyPolicyDocument(document).then(docType => {
+                        // Wait for full document type identification before proceeding
+                        // This ensures completions are based on accurate document type
+                        try {
+                            // Await the async identification to ensure accurate cache updates
+                            const docType = await identifyPolicyDocument(document);
                             policyDocumentCache.set(documentUri, docType);
-                        }).catch(() => {
+                            
+                            // If it's not a policy assignment, return null immediately
+                            if (docType !== PolicyDocumentType.PolicyAssignment) {
+                                return null;
+                            }
+                        } catch (error) {
                             // On error, assume it's not a policy document
+                            logger.debug(`Error identifying policy document: ${error}`);
                             policyDocumentCache.set(documentUri, PolicyDocumentType.None);
-                        });
-                        
-                        // For now, proceed with showing completions based on quick check
+                            return null;
+                        }
                     } else if (policyDocumentCache.get(documentUri) !== PolicyDocumentType.PolicyAssignment) {
                         // We've seen this document before and determined it's not a policy assignment
                         return null;

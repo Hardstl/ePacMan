@@ -225,6 +225,47 @@ suite('Snippet Completion Provider Tests', () => {
         // Verify cache entry was removed
         assert.strictEqual(policyDocumentCache.has(docUri), false, 'Cache entry should be removed when document is closed');
     });
+
+    /**
+     * Test that waiting for async document identification works correctly
+     */
+    test('Should wait for async document identification before providing completions', async () => {
+        // Mock the identifyPolicyDocument to return a delayed response
+        // This simulates the real-world async nature of document identification
+        const identifyPolicyDocumentStub = sandbox.stub().callsFake(() => {
+            return new Promise<PolicyDocumentType>((resolve) => {
+                // Simulate a delay in the identification process
+                setTimeout(() => {
+                    resolve(PolicyDocumentType.PolicyAssignment);
+                }, 10);
+            });
+        });
+        
+        // Call the provider for a policy assignment document
+        const completionItems = await simulateAwaitingProvideCompletionItems(
+            mockTextDocument, 
+            mockPosition, 
+            mockCancellationToken, 
+            mockCompletionContext, 
+            policyDocumentCache, 
+            identifyPolicyDocumentStub
+        );
+        
+        // Assert we got completions after waiting for the async operation
+        assert.ok(completionItems, 'Should return completion items after async identification');
+        assert.ok(Array.isArray(completionItems), 'Should return an array of completion items');
+        assert.ok(completionItems.length > 0, 'Should return at least one completion item');
+        
+        // Verify the stub was called
+        assert.strictEqual(identifyPolicyDocumentStub.callCount, 1, 'identifyPolicyDocument should be called');
+        
+        // Verify the cache was updated
+        assert.strictEqual(
+            policyDocumentCache.get(mockTextDocument.uri.toString()), 
+            PolicyDocumentType.PolicyAssignment, 
+            'Cache should be updated with async identification result'
+        );
+    });
 });
 
 /**
@@ -379,6 +420,93 @@ async function simulateProvideCompletionItems(
     completionItems.forEach((item, index) => {
         item.sortText = `0${index}`;
     });
+    
+    return completionItems;
+}
+
+/**
+ * Helper function to simulate the new awaiting provideCompletionItems method
+ * This simulates the updated implementation that waits for async identification
+ * @param document The document to provide completions for
+ * @param position The position in the document
+ * @param token Cancellation token
+ * @param context Completion context
+ * @param cache The document cache
+ * @param identifyPolicyDocumentStub Stub for the identifyPolicyDocument function
+ * @returns The completion items or null
+ */
+async function simulateAwaitingProvideCompletionItems(
+    document: vscode.TextDocument,
+    position: vscode.Position,
+    token: vscode.CancellationToken,
+    context: vscode.CompletionContext,
+    cache: Map<string, PolicyDocumentType>,
+    identifyPolicyDocumentStub: sinon.SinonStub
+): Promise<vscode.CompletionItem[] | null> {
+    const documentUri = document.uri.toString();
+    
+    // Check if we've already identified this document
+    if (!cache.has(documentUri)) {
+        // Do a quick content check to speed things up
+        const text = document.getText();
+        const quickCheckForAssignment = text.includes('"nodeName"') || 
+                                      text.includes('"policyDefinitionId"') ||
+                                      text.includes('"enforcementMode"') ||
+                                      text.includes('policy-assignment-schema.json');
+        
+        if (!quickCheckForAssignment) {
+            // Quickly rule out non-assignment files
+            cache.set(documentUri, PolicyDocumentType.None);
+            return null;
+        }
+        
+        // Wait for full document type identification before proceeding
+        // This is the key difference - we await the async operation
+        try {
+            // Await the async identification to ensure accurate cache updates
+            const docType = await identifyPolicyDocumentStub(document);
+            cache.set(documentUri, docType);
+            
+            // If it's not a policy assignment, return null immediately
+            if (docType !== PolicyDocumentType.PolicyAssignment) {
+                return null;
+            }
+        } catch (error) {
+            // On error, assume it's not a policy document
+            cache.set(documentUri, PolicyDocumentType.None);
+            return null;
+        }
+    } else if (cache.get(documentUri) !== PolicyDocumentType.PolicyAssignment) {
+        // We've seen this document before and determined it's not a policy assignment
+        return null;
+    }
+    
+    // Create the same completion items as before
+    const completionItems: vscode.CompletionItem[] = [];
+    
+    // ---- Subscription Role Assignments ----
+    const additionalRoleAssignmentsSubscriptionItem = new vscode.CompletionItem(
+        'additionalRoleAssignments-Subscription',
+        vscode.CompletionItemKind.Method
+    );
+    additionalRoleAssignmentsSubscriptionItem.insertText = new vscode.SnippetString(
+        '"additionalRoleAssignments": {\n' +
+        '  "${1:pacSelector or *}":[\n' +
+        '    {\n' +
+        '      "roleDefinitionId": "${2:/providers/microsoft.authorization/roleDefinitions/4d97b98b-1d4f-4787-a291-c67834d212e7}",\n' +
+        '      "scope": "${3:/subscriptions/your-subscription-id}"\n' +
+        '    }\n' +
+        '  ]\n' +
+        '}'
+    );
+    additionalRoleAssignmentsSubscriptionItem.documentation = new vscode.MarkdownString(
+        'Adds additionalRoleAssignments for Policy Assignment managed identity targeting a subscription'
+    );
+    additionalRoleAssignmentsSubscriptionItem.detail = '(snippet)';
+    completionItems.push(additionalRoleAssignmentsSubscriptionItem);
+    
+    // Add other completion items
+    // (Using just one item for brevity in the test simulation)
     
     return completionItems;
 }
