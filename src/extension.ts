@@ -6,7 +6,7 @@ import { ErrorHandler } from './error';
 import { ValidationEngine } from './validation';
 import { registerCommands } from './commands';
 import { GitHubComparisonService } from './github';
-import { isPolicyDocument } from './utils';
+import { isPolicyDocument, identifyPolicyDocument, PolicyDocumentType } from './utils';
 // Components will be imported dynamically when needed
 
 /**
@@ -86,13 +86,66 @@ function registerSnippetCompletionProvider(context: vscode.ExtensionContext): vo
     logger.debug("Registering snippet completion provider");
     
     try {
+        // Create a cache to store document URIs and their policy document types
+        // This improves performance by avoiding repeated parsing of the same document
+        const policyDocumentCache = new Map<string, PolicyDocumentType>();
+        
+        // Register event handlers to clear cache entries when documents change
+        const documentChangeSubscription = vscode.workspace.onDidChangeTextDocument(event => {
+            // Remove from cache when document content changes
+            policyDocumentCache.delete(event.document.uri.toString());
+        });
+        
+        const documentCloseSubscription = vscode.workspace.onDidCloseTextDocument(document => {
+            // Remove from cache when document is closed to free memory
+            policyDocumentCache.delete(document.uri.toString());
+        });
+        
+        // Add subscriptions to context for proper cleanup
+        context.subscriptions.push(documentChangeSubscription, documentCloseSubscription);
+        
         // Register a completion provider for JSON and JSONC files
         const completionProvider = vscode.languages.registerCompletionItemProvider(
             [{ language: 'json' }, { language: 'jsonc' }],
             {
-                provideCompletionItems(document, position, token, completionContext) {
-                    // Only provide suggestions for policy assignment files
-                    if (!isPolicyDocument(document)) {
+                async provideCompletionItems(document, position, token, completionContext) {
+                    // Get document URI for caching
+                    const documentUri = document.uri.toString();
+                    
+                    // Check if we've already identified this document
+                    if (!policyDocumentCache.has(documentUri)) {
+                        // Do a quick content check to speed things up
+                        const text = document.getText();
+                        const quickCheckForAssignment = text.includes('"nodeName"') || 
+                                                      text.includes('"policyDefinitionId"') ||
+                                                      text.includes('"enforcementMode"') ||
+                                                      text.includes('policy-assignment-schema.json');
+                        
+                        if (!quickCheckForAssignment) {
+                            // Quickly rule out non-assignment files
+                            policyDocumentCache.set(documentUri, PolicyDocumentType.None);
+                            return null;
+                        }
+                        
+                        // Wait for full document type identification before proceeding
+                        // This ensures completions are based on accurate document type
+                        try {
+                            // Await the async identification to ensure accurate cache updates
+                            const docType = await identifyPolicyDocument(document);
+                            policyDocumentCache.set(documentUri, docType);
+                            
+                            // If it's not a policy assignment, return null immediately
+                            if (docType !== PolicyDocumentType.PolicyAssignment) {
+                                return null;
+                            }
+                        } catch (error) {
+                            // On error, assume it's not a policy document
+                            logger.debug(`Error identifying policy document: ${error}`);
+                            policyDocumentCache.set(documentUri, PolicyDocumentType.None);
+                            return null;
+                        }
+                    } else if (policyDocumentCache.get(documentUri) !== PolicyDocumentType.PolicyAssignment) {
+                        // We've seen this document before and determined it's not a policy assignment
                         return null;
                     }
                     
