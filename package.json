@@ -2,7 +2,7 @@
   "name": "epacman",
   "displayName": "ePacMan",
   "description": "Extension to manage Enterprise Policy As Code (epac)",
-  "version": "0.1.6",
+  "version": "0.1.7",
   "engines": {
     "vscode": "^1.98.0"
   },

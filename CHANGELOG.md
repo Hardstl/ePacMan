@@ -2,6 +2,12 @@
 
 All notable changes to the "epacman" extension will be documented in this file.
 
+## [v0.1.7]
+
+- Snippets now only show in policy assignment files
+- All extension commands now only show when editing EPAC files
+- The github comparison diff view has been reversed to properly show what's being added
+
 ## [v0.1.5]
 
 - Refactored the validation engine for EPAC policy definition, initiative, and assignment files, reducing validation time and providing more detailed error messages
