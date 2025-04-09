@@ -273,5 +273,4 @@ export function registerCommands(context: vscode.ExtensionContext, validationEng
     );
     
     logger.info("Commands registered successfully");
-    logger.info("Commands registered successfully");
 }
