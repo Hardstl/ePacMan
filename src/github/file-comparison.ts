@@ -311,11 +311,12 @@ export class FileComparisonUtility {
             await vscode.workspace.applyEdit(workspaceEdit);
             
             // Show the diff between normalized versions
+            // Swap the order of parameters to show local first and GitHub second
             await vscode.commands.executeCommand(
                 'vscode.diff',
-                githubUri,
-                localTempUri,
-                `${policyName}: GitHub ↔ Local (Normalized View)`
+                localTempUri,  // Show local file first
+                githubUri,     // Show GitHub version second
+                `${policyName}: Local ↔ GitHub (Normalized View)`  // Updated title to match new order
             );
             
             this.logger.info(`Showing normalized diff view for policy ${policyName}`);

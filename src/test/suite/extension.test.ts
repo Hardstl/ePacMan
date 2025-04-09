@@ -83,9 +83,6 @@ suite('Extension Test Suite', () => {
     const originalLogger = require('../../logging').Logger;
     require('../../logging').Logger.getInstance = getInstanceStub;
     
-    // Mock vscode.window.showInformationMessage
-    const showInfoStub = sinon.stub(vscode.window, 'showInformationMessage').resolves();
-    
     try {
       // Activate the extension
       await myExtensionProxy.activate(context);
@@ -97,20 +94,21 @@ suite('Extension Test Suite', () => {
       assert.strictEqual(registerCommandsStub.calledOnce, true, 'registerCommands should be called once');
       assert.strictEqual(registerCommandsStub.firstCall.args[0], context, 'registerCommands should be called with context');
       
-      // Verify that the extension activated successfully
-      assert.strictEqual(showInfoStub.calledOnce, true, 'showInformationMessage should be called once');
-      assert.strictEqual(showInfoStub.firstCall.args[0], 'ePacMan extension activated', 'Activation message should be shown');
-      
       // Verify that the logger was used
       assert.strictEqual(loggerStub.info.called, true, 'Logger.info should be called');
+      
+      // Verify the correct activation success message was logged
+      assert.strictEqual(
+        loggerStub.info.calledWith("ePacMan extension activated successfully"), 
+        true, 
+        'Logger.info should be called with the correct activation message'
+      );
+      
       assert.strictEqual(loggerStub.debug.called, true, 'Logger.debug should be called');
     } finally {
       // Restore the original functions
       require('../../commands').registerCommands = originalRegisterCommands;
       require('../../logging').Logger.getInstance = originalLogger.getInstance;
-      
-      // Restore stubs
-      showInfoStub.restore();
     }
   });
   

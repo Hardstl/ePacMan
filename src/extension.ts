@@ -332,7 +332,6 @@ export async function activate(context: vscode.ExtensionContext) {
         });
         
         logger.info("ePacMan extension activated successfully");
-        vscode.window.showInformationMessage("ePacMan extension activated");
     } catch (error: any) {
         logger.error("Failed to activate ePacMan extension", error);
         vscode.window.showErrorMessage(`Failed to activate ePacMan extension: ${error.message}`);

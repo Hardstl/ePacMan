@@ -90,7 +90,7 @@
       ],
       "explorer/context": [
         {
-          "when": "resourceExtname =~ /\\.(json|jsonc)$/i",
+          "when": "resourceExtname =~ /\\.(json|jsonc)$/i && epacman.isCustomPolicy",
           "command": "epacman.validateCurrentFile",
           "group": "epacman"
         },
@@ -100,7 +100,7 @@
           "group": "epacman"
         },
         {
-          "when": "resourceExtname =~ /\\.(json|jsonc)$/i",
+          "when": "resourceExtname =~ /\\.(json|jsonc)$/i && epacman.isCustomPolicy",
           "command": "epacman.viewPolicyCard",
           "group": "epacman"
         },
